@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    container_name: schoolmanagement
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=schoolmanagement
+    command: --init-file /docker-entrypoint-initdb.d/Dump20240504.sql
+    ports:
+      - "3306:3307"
+    volumes:
+      - D:/Javahaha/Fullstack/Part 2/Spring Boot/schoolmangagement/Dump20240504.sql:/docker-entrypoint-initdb.d/Dump20240504.sql
+  springboot-app:
+    depends_on:
+      - mysqldb
+    build: src/main/java/com/severusnguyen/schoolmangagement
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: schoolmanagement
+      MYSQL_PORT: 3306
+      MYSQL_DB_NAME: schoolmanagement
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+
+networks:
+  network_mysql:
+    driver: bridge
